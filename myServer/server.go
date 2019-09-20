@@ -2,7 +2,7 @@ package myServer
 
 import (
 	"github.com/gin-gonic/gin"
-	"playServer/myServer/testhtml"
+	"serverTest/myServer/testhtml"
 )
 
 func NewGinEngine() (engine *gin.Engine) {
