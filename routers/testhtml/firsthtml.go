@@ -3,22 +3,28 @@ package testhtml
 import "github.com/gin-gonic/gin"
 
 func Hello(ctx *gin.Context) {
-	s := `<!DOCTYPE html>
-<html>
-<body>
+	s := `<h1> This is a head </h1>
+<p> This is a </br>paragraph </p>
+<a href="http://www.baidu.com" style="text-decoration:none"> 前往百度 
 
-<h1>我的第一张网页</h1>
+</a>
+<!--
+<pre>	for i := 0; i < 5; i++ {
+		i += 1
+	}</pre>
+-->
+</br>
+<adress>By <a href="2336260845@qq.com">马永真</adress>
+<!注释是不会被显示的，哈哈哈哈>`
+	ctx.Header("Content-Type", "text/html; charset=utf-8")
+	ctx.String(200, s)
+	return
+}
 
-<p>我的第一个段落</p>
+func Writer(ctx *gin.Context) {
+	s := `<h>这是我的邮件</h>
+<p>如果遇到了问题可以联系我</p>`
 
-<p id="demo"></p>
-
-<script>
- document.getElementById("demo").innerHTML = 5 + 6;
-</script>
-
-</body>
-</html>`
 	ctx.Header("Content-Type", "text/html; charset=utf-8")
 	ctx.String(200, s)
 	return

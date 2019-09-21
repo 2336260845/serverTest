@@ -1,9 +1,9 @@
-package myServer
+package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"serverTest/myServer/file"
-	"serverTest/myServer/testhtml"
+	"serverTest/routers/file"
+	"serverTest/routers/testhtml"
 )
 
 func NewGinEngine() (engine *gin.Engine) {

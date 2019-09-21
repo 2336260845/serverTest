@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"serverTest/conf"
-	"serverTest/myServer"
+	"serverTest/routers"
 )
 
 var versionStr = "unknown"
@@ -69,7 +69,7 @@ func main() {
 */
 	//------------------------------------------------------------------------------------
 
-	server := myServer.NewGinEngine()
+	server := routers.NewGinEngine()
 	if err := server.Run(fmt.Sprintf("%s:%d", "0.0.0.0", cfg.ListenAddr)); err != nil {
 		log.Errorf("服务启动失败")
 		os.Exit(-1)
