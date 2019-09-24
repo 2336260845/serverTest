@@ -12,22 +12,24 @@ commit=`getcommit`
 
 BuildType=$1
 
-echo "build serviceapi"
+echo "build" ${myServerTest}
 
 go build -ldflags "-X main.versionStr=$version -X main.commitStr=$commit"  -o ${TARGET}
 
 # 清空bin目录下所有文件,会将日志保留
-mkdir -p log
-mkdir -p bin
+mkdir -p ./log
+mkdir -p ./bin
 
 current=`date "+%Y-%m-%d-%H:%M:%S"`
 
-if [[ -d "/bin/stdout.log" ]]; then
+if [[ -f "./bin/stdout.log" ]]; then
 mv bin/stdout.log  ./log/stdout${current}.log
+else
+echo "没有日志文件,不需要保留"
 fi
 
-rm -rf
-mv ${TARGET} bin
+rm  bin/stdout.log
+mv ${TARGET} ./bin
 
 chmod +x start.sh
 cp start.sh bin

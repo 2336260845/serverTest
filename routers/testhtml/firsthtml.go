@@ -14,7 +14,21 @@ func Hello(ctx *gin.Context) {
 	}</pre>
 -->
 </br>
-<adress>By <a href="2336260845@qq.com">马永真</adress>
+<adress>
+By <a href="2336260845@qq.com">马永真 </a>
+</adress>
+</br>
+<button type="button" onclick="print()">上传文件</button>
+<script>
+function print() {
+	alert("你点击了按钮")
+}
+</script>
+</br>
+<adress>
+<a href="file">上传文件 </a>
+</adress>
+
 <!注释是不会被显示的，哈哈哈哈>`
 	ctx.Header("Content-Type", "text/html; charset=utf-8")
 	ctx.String(200, s)
@@ -22,90 +36,68 @@ func Hello(ctx *gin.Context) {
 }
 
 func Writer(ctx *gin.Context) {
-	s := `<h>这是我的邮件</h>
-<p>如果遇到了问题可以联系我</p>`
+	s := `<h>这是我的邮件:2336260845@qq.com</h>
+<p></p>`
 
 	ctx.Header("Content-Type", "text/html; charset=utf-8")
 	ctx.String(200, s)
 	return
 }
 
-func Hello2(ctx *gin.Context) {
+func File(ctx *gin.Context) {
 	s := `<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>我的第一个html页面</title>
-         
-        <style type="text/css">
-            .btn {
-                height: 30px;
-                width: 100px;
-                background: #0c093e;
-                color:#fff;
-                font-family: "微软雅黑";
-                border-radius: 5px;
-                text-align: center;
-                line-height: 30px;
-                position: absolute;
-                left: 50%;
-                margin-left: -50px;
-                top: 50%;
-                margin-top: -15px;
-                cursor: pointer;
-                transition: background 1s ease;
-            }
-             
-            .btn:hover{
-                background: #251f8c;
-            }
-        </style>
-    </head>
-     
+<head>
+    <meta charset="UTF-8">
+    <title>上传图片</title>
     <script type="text/javascript">
-     
-        /*var person = {
-            name : "zhangsan"
+        var xhr
+        function UpFile() {
+            var file = document.getElementById("file").files[0];
+            var url = "http://127.0.0.1:3333" + "/fileop/push";
+
+            var form = new FormData;
+            form.append("file", file);
+
+            xhr = new XMLHttpRequest();
+            xhr.open("post", url, true);
+            xhr.onload = UpComplete;
+            xhr.onerror = UpFailed;
+
+            //TODO 进度条
+
+            xhr.send(form);
         }
-     
-        person.name = "lisi";
-         
-        person.name = "wangwu"
-         
-        alert(person.name);*/
-     
-     
-        window['onload'] = function(){
-             
-            //alert(1);
-            //1. 获取按钮的dom元素
-            var btn = document.getElementsByTagName('div')[0];
-             
-            btn.onclick = function(){
-                alert('保存成功！');
+
+        function UpComplete(evt) {
+            var data = JSON.parse(evt.target.responseText);
+            if (data.success) {
+                alert("上传成功");
+            } else {
+                alert("上传失败");
             }
-             
         }
-         
-        /*window.onload = function(){
-            alert(2);
-        }*/
-         
-        /*
-         *  A 1
-         *  B 2
-         *  C 1,2
-         *  D 报错
-         * 
-         * */
+
+        function UpFailed(evt) {
+            alert("上传失败");
+        }
+
+        function CancleUpFile() {
+            xhr.abort();
+        }
     </script>
-     
-    <body>
-        <div class='btn'>
-            保存
-        </div>
-    </body>
-</html>`
+</head>
+<body>
+<progress id="progressBar" value="0" max="100" style="width: 300px;"></progress>
+<span id="percentage"></span><span id="time"></span>
+<br /><br />
+<input type="file" id="file" name="myFile" />
+<input type="button" onclick="UpFile()" value="上传文件" />
+<input type="button" onclick="CancleUpFile()" value="取消" />
+</body>
+</html>
+`
+
 	ctx.Header("Content-Type", "text/html; charset=utf-8")
 	ctx.String(200, s)
 	return

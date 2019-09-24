@@ -35,7 +35,7 @@ start()
                 echo '启动失败,等待3s后重试...'
                 sleep 3
             else
-                echo -e '\033[32mstarted\033[1m\033[0m'
+                echo '\033[32mstarted\033[1m\033[0m'
                 break
             fi
             count=${count}+1
@@ -63,7 +63,7 @@ fstop()
             fi
             check
             if (($? == 1));then
-                echo -e '\033[32mstopped\033[1m\033[0m'
+                echo '\033[32mstopped\033[1m\033[0m'
                 break
             else
                 echo '服务停止失败,等待3s后重试...'
