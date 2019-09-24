@@ -19,9 +19,16 @@ go build -ldflags "-X main.versionStr=$version -X main.commitStr=$commit"  -o ${
 # 清空bin目录下所有文件,会将日志保留
 mkdir -p log
 mkdir -p bin
+
 current=`date "+%Y-%m-%d-%H:%M:%S"`
+
+if [[ -d "/bin/stdout.log" ]]; then
 mv bin/stdout.log  ./log/stdout${current}.log
+fi
+
 rm -rf
 mv ${TARGET} bin
+
+chmod +x start.sh
 cp start.sh bin
 cp config.toml bin
