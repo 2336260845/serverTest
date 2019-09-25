@@ -15,6 +15,16 @@ check()
     fi
 }
 
+status()
+{
+    check
+    if [[ $? == 1 ]];then
+        echo "服务已停止"
+    else
+        echo "服务正在运行中"
+    fi
+}
+
 start()
 {
     check
@@ -35,7 +45,7 @@ start()
                 echo '启动失败,等待3s后重试...'
                 sleep 3
             else
-                echo '\033[32mstarted\033[1m\033[0m'
+                echo -e '\033[32mstarted\033[1m\033[0m'
                 break
             fi
             count=${count}+1
@@ -63,7 +73,7 @@ fstop()
             fi
             check
             if (($? == 1));then
-                echo '\033[32mstopped\033[1m\033[0m'
+                echo -e '\033[32mstopped\033[1m\033[0m'
                 break
             else
                 echo '服务停止失败,等待3s后重试...'
@@ -81,9 +91,12 @@ case ${1} in
     stop)
         fstop
         ;;
+    status)
+        status
+        ;;
     *)
-          echo "${0} <start|stop>"
-          exit 1
-          ;;
+        echo "${0} <start|stop|status>"
+        exit 1
+        ;;
 esac
 

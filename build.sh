@@ -28,7 +28,6 @@ else
 echo "没有日志文件,不需要保留"
 fi
 
-rm  bin/stdout.log
 mv ${TARGET} ./bin
 
 chmod +x start.sh
