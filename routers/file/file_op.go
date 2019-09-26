@@ -1,14 +1,16 @@
 package file
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"image"
+	"image/jpeg"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
+	"serverTest/apis"
+	"serverTest/conf"
 )
 
 func FileOpRouteInit(engine *gin.Engine) {
@@ -51,28 +53,75 @@ func Fileupload(c *gin.Context) {
 }
 
 func FilePush(ctx *gin.Context) {
-	funcName := "FilePush"
 
-	fileType := ctx.Request.Header.Get("Content-Type")
-	header := ctx.Request.Header
 
-	if fileType == "image/jpeg" {
-		log.Infof("图片格式为:", fileType)
-		img, str, err := image.Decode(ctx.Request.Body)
-		if err != nil {
-			log.Errorf("%s:decode image error,err=%+v", funcName, err.Error())
-		}
-
-		log.Infof("str=%+v, img=%+v", str, img)
-	} else {
-		log.Infof("不支持的图片类型,fileType=%+v, header=%+v\n\n", fileType, header)
-		log.Infof("param=%+v\n\n", ctx.Params)
-
-		body, _ := ioutil.ReadAll(ctx.Request.Body)
-		log.Infof("body=%+v\n\n", string(body))
-
+	err := ctx.Request.ParseMultipartForm(1 << 32)
+	if err != nil {
+		log.Errorf("ParseMultipartForm err:%+v", err.Error())
 	}
 
+	if ctx.Request.MultipartForm == nil {
+		log.Errorf("MultipartForm is empty")
+		ctx.JSON(400, apis.SendJson(errors.New("没有找到文件"), nil))
+		return
+	}
+	fileList := ctx.Request.MultipartForm.File["file"]
+
+	if len(fileList) <= 0 {
+		log.Errorf("没有找到file文件,fileList=%+v", fileList)
+		ctx.JSON(400, apis.SendJson(errors.New("没有找到file文件"), fileList))
+		return
+	}
+
+	if len(fileList) != 1 {
+		log.Errorf("不支持多个file一起上传,fileList=%+v", fileList)
+		ctx.JSON(400, apis.SendJson(errors.New("不支持多个file一起上传"), fileList))
+		return
+	}
+
+	fileRec := ctx.Request.MultipartForm.File["file"][0]
+
+	fileType := fileRec.Header.Get("Content-Type")
+	if fileType == "" {
+		log.Errorf("无法得到文件格式,fileType=%+v", fileType)
+		ctx.JSON(400, apis.SendJson(errors.New("无法得到文件格式,header头部信息参考data"), fileRec.Header))
+		return
+	}
+
+	if fileType == "image/jpeg" {
+		fileop, err := fileRec.Open()
+		if err != nil {
+			log.Errorf("无法打开文件,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法打开文件,报错信息参考data"), err.Error()))
+			return
+		}
+
+		image, err := jpeg.Decode(fileop)
+		if err != nil {
+			log.Errorf("无法解析文件,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法解析文件,报错信息参考data"), err.Error()))
+			return
+		}
+
+		cfg := conf.Cfg
+		fileNew, err := os.Create(cfg.ProjectPath+"/static/tmp.jpg")
+		if err != nil {
+			log.Errorf("无法新建临时文件,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法新建临时文件,报错信息参考data"), err.Error()))
+			return
+		}
+
+		err = jpeg.Encode(fileNew, image, nil)
+		if err != nil {
+			log.Errorf("无法保存图片,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法保存图片,报错信息参考data"), err.Error()))
+			return
+		}
+	}
+
+	log.Infof("保存图片成功")
+	ctx.JSON(200, apis.SendJson(nil, nil))
+	return
 }
 
 func FilePull(ctx *gin.Context) {

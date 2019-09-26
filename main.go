@@ -30,11 +30,12 @@ func parseFlag() {
 	}
 }
 
+
+
 func main() {
 	parseFlag()
-	cfg := conf.Config{}
 
-	_, err := toml.DecodeFile(cfgFile, &cfg)
+	_, err := toml.DecodeFile(cfgFile, &conf.Cfg)
 	if err != nil {
 		fmt.Printf("toml.DecodeFile: %+v\n", err)
 		return
@@ -70,7 +71,7 @@ func main() {
 	//------------------------------------------------------------------------------------
 
 	server := routers.NewGinEngine()
-	if err := server.Run(fmt.Sprintf("%s:%d", "0.0.0.0", cfg.ListenAddr)); err != nil {
+	if err := server.Run(fmt.Sprintf("%s:%d", "0.0.0.0", conf.Cfg.ListenAddr)); err != nil {
 		log.Errorf("服务启动失败")
 		os.Exit(-1)
 	}
