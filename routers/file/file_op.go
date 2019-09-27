@@ -2,23 +2,30 @@ package file
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"image/jpeg"
-	"io"
 	"net/http"
 	"os"
 	"serverTest/apis"
 	"serverTest/conf"
+	"strconv"
+	"time"
 )
 
 func FileOpRouteInit(engine *gin.Engine) {
 	engine.GET("/home/fileopt", Fileopthtml)
-	engine.POST("/home/fileuplaod", Fileupload)
-	engine.LoadHTMLGlob("view/*")
+	//engine.LoadHTMLGlob("view/*")
 	engine.POST("/fileop/push", FilePush)
-	engine.POST("/fileop/pull")
+	engine.POST("/fileop/pull", FilePull)
+	engine.StaticFS("/upload/images", http.Dir(GetImageFullPath()))
+}
+
+func GetImageFullPath() string {
+	cfg := conf.Cfg
+	path := cfg.ProjectPath+"/static/uploadfile"
+	log.Infof("GetImageFullPath=%+v", path)
+	return path
 }
 
 func Fileopthtml(c *gin.Context) {
@@ -27,33 +34,12 @@ func Fileopthtml(c *gin.Context) {
 	})
 }
 
-func Fileupload(c *gin.Context) {
-	//得到上传的文件
-	file, header, err := c.Request.FormFile("image") //image这个是uplaodify参数定义中的   'fileObjName':'image'
-	if err != nil {
-		c.String(http.StatusBadRequest, "Bad request")
-		return
-	}
-	//文件的名称
-	filename := header.Filename
-
-	fmt.Println(file, err, filename)
-	//创建文件
-	out, err := os.Create("static/uploadfile/" + filename)
-	//注意此处的 static/uploadfile/ 不是/static/uploadfile/
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer out.Close()
-	_, err = io.Copy(out, file)
-	if err != nil {
-		log.Fatal(err)
-	}
-	c.String(http.StatusCreated, "upload successful")
+func GetDateString() string {
+	currentTime:=time.Now().Unix()
+	return strconv.FormatInt(currentTime, 10)
 }
 
 func FilePush(ctx *gin.Context) {
-
 
 	err := ctx.Request.ParseMultipartForm(1 << 32)
 	if err != nil {
@@ -104,7 +90,24 @@ func FilePush(ctx *gin.Context) {
 		}
 
 		cfg := conf.Cfg
-		fileNew, err := os.Create(cfg.ProjectPath+"/static/tmp.jpg")
+
+		//保存到挂载目录中
+		fileUpload, err := os.Create(cfg.ProjectPath+"/static/uploadfile/"+fileRec.Filename)
+		if err != nil {
+			log.Errorf("无法新建临时文件,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法新建临时文件,报错信息参考data"), err.Error()))
+			return
+		}
+
+		err = jpeg.Encode(fileUpload, image, nil)
+		if err != nil {
+			log.Errorf("无法保存图片,err=%+v", err.Error())
+			ctx.JSON(400, apis.SendJson(errors.New("无法保存图片,报错信息参考data"), err.Error()))
+			return
+		}
+
+		//保存到history中
+		fileNew, err := os.Create(cfg.ProjectPath+"/static/historyfile/"+GetDateString()+".jpg")
 		if err != nil {
 			log.Errorf("无法新建临时文件,err=%+v", err.Error())
 			ctx.JSON(400, apis.SendJson(errors.New("无法新建临时文件,报错信息参考data"), err.Error()))
@@ -125,5 +128,31 @@ func FilePush(ctx *gin.Context) {
 }
 
 func FilePull(ctx *gin.Context) {
+	err := ctx.Request.ParseMultipartForm(1 << 32)
+	if err != nil {
+		log.Errorf("ParseMultipartForm err:%+v", err.Error())
+	}
+
+	if ctx.Request.MultipartForm == nil {
+		log.Errorf("MultipartForm is empty")
+		ctx.JSON(400, apis.SendJson(errors.New("没有找到文件"), nil))
+		return
+	}
+	fileName := ctx.Request.MultipartForm.Value["fileName"]
+
+	if len(fileName) <= 0 {
+		log.Errorf("没有找到文件,fileName=%+v", fileName)
+		ctx.JSON(400, apis.SendJson(errors.New("没有找到file文件"), fileName))
+		return
+	}
+
+	if len(fileName) != 1 {
+		log.Errorf("不支持多个fileName一起下载,fileName=%+v", fileName)
+		ctx.JSON(400, apis.SendJson(errors.New("不支持多个file一起下载"), fileName))
+		return
+	}
+
+	//fileRec := ctx.Request.MultipartForm.Value["fileName"][0]
+
 
 }

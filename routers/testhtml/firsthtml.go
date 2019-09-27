@@ -66,7 +66,6 @@ func File(ctx *gin.Context) {
             xhr.onload = UpComplete;
             xhr.onerror = UpFailed;
 
-            //TODO 进度条
             xhr.upload.onprogress = progressFunction;//【上传进度调用方法实现】
             xhr.upload.onloadstart = function(){//上传开始执行方法
                 ot = new Date().getTime();   //设置上传开始时间
@@ -76,9 +75,17 @@ func File(ctx *gin.Context) {
             xhr.send(form);
         }
 
+        function cropImageAndDownload() {
+            var fileop = document.getElementById("file").files[0];
+            var url = "http://127.0.0.1:3333" + "/upload/images/" + fileop.name;
+
+            document.getElementById("imgesShow").src = url;
+
+        }
+
         function UpComplete(evt) {
             var data = JSON.parse(evt.target.responseText);
-            if (data.ok === "success") {
+            if (data.ok == "success") {
                 alert("上传成功");
             } else {
                 alert("上传失败");
@@ -87,6 +94,19 @@ func File(ctx *gin.Context) {
 
         function UpFailed(evt) {
             alert("上传失败");
+        }
+
+        function downComplete() {
+            var data = JSON.parse(evt.target.responseText);
+            if (data.ok == "success") {
+                alert("下载成功");
+            } else {
+                alert("下载失败");
+            }
+        }
+
+        function downFailed(evt) {
+            alert("下载失败");
         }
 
         function CancleUpFile() {
@@ -134,7 +154,9 @@ func File(ctx *gin.Context) {
 <br /><br />
 <input type="file" id="file" name="myFile" />
 <input type="button" onclick="UpFile()" value="上传文件" />
+<input type="button" onclick="cropImageAndDownload()" value="智能切割图片并下载" />
 <input type="button" onclick="CancleUpFile()" value="取消" />
+<img src="" id="imgesShow"/>
 </body>
 </html>
 
