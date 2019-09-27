@@ -7,11 +7,11 @@ type ResponeMsg struct {
 }
 
 func SendJson(err error, data interface{}) (responeMsg ResponeMsg) {
-	if err != nil {
+	if err == nil {
 		responeMsg.Ok = "success"
-		responeMsg.Msg = err.Error()
 	} else {
 		responeMsg.Ok = "failed"
+		responeMsg.Msg = err.Error()
 	}
 
 	responeMsg.Data = data

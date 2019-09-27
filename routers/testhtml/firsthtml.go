@@ -78,7 +78,7 @@ func File(ctx *gin.Context) {
 
         function UpComplete(evt) {
             var data = JSON.parse(evt.target.responseText);
-            if (data.success) {
+            if (data.ok === "success") {
                 alert("上传成功");
             } else {
                 alert("上传失败");

@@ -16,7 +16,7 @@ import (
 func FileOpRouteInit(engine *gin.Engine) {
 	engine.GET("/home/fileopt", Fileopthtml)
 	engine.POST("/home/fileuplaod", Fileupload)
-	engine.LoadHTMLGlob("../view/*")
+	engine.LoadHTMLGlob("view/*")
 	engine.POST("/fileop/push", FilePush)
 	engine.POST("/fileop/pull")
 }
