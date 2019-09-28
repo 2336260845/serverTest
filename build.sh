@@ -19,6 +19,10 @@ go build -ldflags "-X main.versionStr=$version -X main.commitStr=$commit"  -o ${
 # 清空bin目录下所有文件,会将日志保留
 mkdir -p ./log
 mkdir -p ./bin
+mkdir -p ./static/cropfiles/
+mkdir -p ./static/historyfile/
+mkdir -p ./static/uploadfile/
+
 
 current=`date "+%Y-%m-%d-%H:%M:%S"`
 
