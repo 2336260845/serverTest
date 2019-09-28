@@ -3,6 +3,6 @@ package conf
 var Cfg = Config{}
 
 type Config struct {
-	ListenAddr int
+	ListenAddr  int
 	ProjectPath string
 }

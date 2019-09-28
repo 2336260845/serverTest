@@ -3,30 +3,9 @@ package testhtml
 import "github.com/gin-gonic/gin"
 
 func Hello(ctx *gin.Context) {
-	s := `<h1> This is a head </h1>
-<p> This is a </br>paragraph </p>
-<a href="http://www.baidu.com" style="text-decoration:none"> 前往百度 
+	s := `
 
-</a>
-<!--
-<pre>	for i := 0; i < 5; i++ {
-		i += 1
-	}</pre>
--->
-</br>
-<adress>
-By <a href="2336260845@qq.com">马永真 </a>
-</adress>
-</br>
-<button type="button" onclick="print()">上传文件</button>
-<script>
-function print() {
-	alert("你点击了按钮")
-}
-</script>
-</br>
-<adress>
-<a href="file">上传文件 </a>
+<a href="file">智能切割图片 </a>
 </adress>
 
 <!注释是不会被显示的，哈哈哈哈>`
@@ -53,9 +32,12 @@ func File(ctx *gin.Context) {
     <title>上传图片</title>
     <script type="text/javascript">
         var xhr
+
+        localPath = "http://127.0.0.1:3333"
+
         function UpFile() {
             var fileop = document.getElementById("file").files[0];
-            var url = "http://127.0.0.1:3333" + "/fileop/push";
+            var url = localPath + "/fileop/push";
 
             var form = new FormData;
 
@@ -77,10 +59,20 @@ func File(ctx *gin.Context) {
 
         function cropImageAndDownload() {
             var fileop = document.getElementById("file").files[0];
-            var url = "http://127.0.0.1:3333" + "/upload/images/" + fileop.name;
+            var url = localPath + "/upload/images/cropfiles/" + fileop.name;
+
+            var form = new FormData;
+            form.append("file", fileop);
+            var pullUrl = localPath + "/fileop/pull";
+
+            xhr = new XMLHttpRequest();
+            xhr.open("post", pullUrl, true);
+            xhr.onload = downComplete;
+            xhr.onerror = downFailed;
+
+            xhr.send(form);
 
             document.getElementById("imgesShow").src = url;
-
         }
 
         function UpComplete(evt) {
@@ -156,7 +148,8 @@ func File(ctx *gin.Context) {
 <input type="button" onclick="UpFile()" value="上传文件" />
 <input type="button" onclick="cropImageAndDownload()" value="智能切割图片并下载" />
 <input type="button" onclick="CancleUpFile()" value="取消" />
-<img src="" id="imgesShow"/>
+</br>
+<img src="" id="imgesShow" align=left/>
 </body>
 </html>
 

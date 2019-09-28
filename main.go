@@ -30,8 +30,6 @@ func parseFlag() {
 	}
 }
 
-
-
 func main() {
 	parseFlag()
 
