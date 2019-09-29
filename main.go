@@ -39,35 +39,6 @@ func main() {
 		return
 	}
 
-	//------------------------------------------------------------------------------------
-	/*
-		f, _ := os.Open("123.jpg")
-		img, _, _ := image.Decode(f)
-
-
-		analyzer := smartcrop.NewAnalyzer(nfnt.NewDefaultResizer())
-		topCrop, _ := analyzer.FindBestCrop(img, 250, 250)
-
-		fmt.Printf("Top crop: %+v\n", topCrop)
-
-		type SubImager interface {
-			SubImage(r image.Rectangle) image.Image
-		}
-		croppedimg := img.(SubImager).SubImage(topCrop)
-		f2, err := os.Create("123_test.jpg")
-		if err != nil {
-			fmt.Printf("create file err:%+v", err.Error())
-			os.Exit(1)
-		}
-
-		err = jpeg.Encode(f2, croppedimg, &jpeg.Options{100})
-		if err != nil {
-			fmt.Printf("jpeg.Encode err:%+v", err.Error())
-			os.Exit(1)
-		}
-	*/
-	//------------------------------------------------------------------------------------
-
 	server := routers.NewGinEngine()
 	if err := server.Run(fmt.Sprintf("%s:%d", "0.0.0.0", conf.Cfg.ListenAddr)); err != nil {
 		log.Errorf("服务启动失败")

@@ -1,2 +1,9 @@
 ListenAddr = 3333
 ProjectPath = "/Users/mayz/go/src/serverTest"
+
+[email]
+Sender = "提醒邮件"
+UserEmail = "853266983@qq.com"
+Password = "woheljvcosjtbaif"
+Host = "smtp.qq.com"
+Port = 465
