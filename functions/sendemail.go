@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/gomail.v2"
 	"serverTest/conf"
+	"time"
 )
 
 type SendEmailBody struct {
@@ -17,6 +18,18 @@ type SendEmailBody struct {
 	Body             string
 	Host             string
 	Port             int
+}
+
+func NewDefaultEmailBody(title, body string, receivers []string) *SendEmailBody{
+	return &SendEmailBody{
+		SenderName: "little fairy",
+		Receivers: receivers,
+		IsDefaultSender: true,
+		Title: title,
+		Body: body,
+		Host: "smtp.qq.com",
+		Port: 465,
+	}
 }
 
 func DefaultEmailIsInvalid() bool {
@@ -58,4 +71,17 @@ func SendEmail(emailBody *SendEmailBody) error {
 	}
 
 	return nil
+}
+
+func SetDelaySendEmail(emailBody *SendEmailBody, second int) {
+	log.Infof("一封信的邮件在:%+vs后发送,邮件内容为:%+v", second, emailBody)
+
+	time.Sleep(time.Second * time.Duration(second))
+	err := SendEmail(emailBody)
+	if err != nil {
+		log.Errorf("延时邮件发送失败,请检查报错:%+v", err.Error())
+		return
+	}
+
+	log.Infof("延时邮件发送成功")
 }
