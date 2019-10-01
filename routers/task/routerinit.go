@@ -87,7 +87,7 @@ func SetDelayEmailTask(ctx *gin.Context) {
 	log.Infof("sit=%+v", sit)
 	if sit.Body == "" || sit.Receivers == "" || sit.Title == "" {
 		log.Errorf("传入参数不正确,邮件标题,内容,接受人不能为空")
-		ctx.JSON((400, apis.SendJson(errors.New("传入参数不正确,邮件标题,内容,接受人不能为空"), nil)))
+		ctx.JSON(400, apis.SendJson(errors.New("传入参数不正确,邮件标题,内容,接受人不能为空"), nil))
 		return
 	}
 
