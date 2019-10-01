@@ -4,8 +4,11 @@ import "github.com/gin-gonic/gin"
 
 func Hello(ctx *gin.Context) {
 	s := `
-
+<h1>所有功能</h1>
 <a href="file">智能切割图片 </a>
+</adress>
+</br>
+<a href="email">延时发送邮件 </a>
 </adress>
 
 <!注释是不会被显示的，哈哈哈哈>`

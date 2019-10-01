@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>输入待发送的邮件</h1>
+发送邮件至:<input type="text", id="receivers"></br>
+多少秒之后发送:<input type="text", id="delayTime"></br>
+邮件标题:<input type="text", id="emailTitle"></br>
+邮件内容:<input type="text", id="emailBody"></br>
+<button id="sendInfobtn" onclick="SetSendEmailTask()" >设置任务</button>
+<script>
+    localPath = "http://127.0.0.1:3333";
+
+    function SetSendEmailTask() {
+        receviers = document.getElementById("receivers").value;
+        delayTime = Number(document.getElementById("delayTime").value);
+        emailTitle = document.getElementById("emailTitle").value;
+        emailBody = document.getElementById("emailBody").value;
+
+        var url = localPath + "/setTask";
+
+        var orderData = {
+            "title": emailTitle,
+            "body" : emailBody,
+            "receivers": receviers,
+            "delayTime": delayTime
+        };
+
+        var jsonStr = JSON.stringify(orderData);
+
+        xhr = new XMLHttpRequest();
+        xhr.open("post", url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.send(jsonStr)
+    }
+</script>
+</body>
+</html>
